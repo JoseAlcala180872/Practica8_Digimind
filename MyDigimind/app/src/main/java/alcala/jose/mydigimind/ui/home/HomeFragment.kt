@@ -12,13 +12,19 @@ import alcala.jose.mydigimind.databinding.FragmentHomeBinding
 import alcala.jose.mydigimind.ui.Task
 import android.content.Context
 import android.widget.BaseAdapter
+import android.widget.GridView
 import androidx.lifecycle.Observer
 
 class HomeFragment : Fragment() {
-    var tasks=ArrayList<Task>()
 
+    private var adaptador:AdaptadorTareas?=null
     private lateinit var homeViewModel: HomeViewModel
     private var _binding: FragmentHomeBinding? = null
+
+    companion object{
+        var tasks=ArrayList<Task>()
+        var first=true
+    }
 
     // This property is only valid between onCreateView and
     // onDestroyView.
@@ -35,11 +41,23 @@ class HomeFragment : Fragment() {
         _binding = FragmentHomeBinding.inflate(inflater, container, false)
         val root=inflater.inflate(R.layout.fragment_home, container, false)
 
+        if (first==true){
+            fillTask()
+            first=false
+        }
+
 
         homeViewModel.text.observe(viewLifecycleOwner, Observer{
 
         })
         fillTask()
+
+        adaptador= AdaptadorTareas(root.context, tasks)
+
+        val gridView:GridView=root.findViewById(R.id.gridView)
+
+        gridView.adapter=adaptador
+
         return root
     }
 
@@ -80,7 +98,22 @@ class HomeFragment : Fragment() {
         }
 
         override fun getView(position: Int, convertView: View?, parent: ViewGroup?): View {
-            TODO("Not yet implemented")
+            var task =tasks[position]
+            var inflador=LayoutInflater.from(contexto)
+            var vista=inflador.inflate(R.layout.task_view, null)
+
+            var tv_title:TextView=vista.findViewById(R.id.tv_title)
+            var tv_time:TextView=vista.findViewById(R.id.tv_time)
+            var tv_days:TextView=vista.findViewById(R.id.tv_days)
+
+            tv_title.setText(task.title)
+            tv_time.setText(task.time)
+            tv_days.setText(task.days.toString())
+
+            return vista
+
+
+
         }
 
     }
